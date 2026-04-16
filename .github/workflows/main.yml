@@ -159,7 +159,7 @@ jobs:
   # Deploy to production server
   deploy:
     name: Deploy to production
-    if: github.ref_name == 'main'
+    #if: github.ref_name == 'main'
     runs-on: ubuntu-latest
     needs:      
       - build_backend_and_push_to_docker_hub
@@ -196,7 +196,7 @@ jobs:
   # Integration tests
   integration_tests:
     name: Integration tests
-    if: github.ref_name == 'main'
+    #if: github.ref_name == 'main'
     runs-on: ubuntu-latest
     needs: deploy
     steps:
@@ -218,7 +218,7 @@ jobs:
   # Send message to Telegram 
   send_message:
     name: Send message to Telegram
-    if: github.ref_name == 'main'
+    #if: github.ref_name == 'main'
     runs-on: ubuntu-latest
     needs: integration_tests
     steps:

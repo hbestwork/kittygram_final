@@ -1,8 +1,10 @@
 # flake8: noqa
 import os
 from pathlib import Path
+
 from environs import Env
 from django.core.management.utils import get_random_secret_key
+
 env = Env()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
