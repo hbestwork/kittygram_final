@@ -1,9 +1,6 @@
 name: Main Kittygram workflow
 
-on:
-  push:
-    branches:
-      - main
+on: push
 
 jobs:
   # Linter
@@ -15,13 +12,13 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: 3.9
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
         cache: 'pip'
 
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip        
-        pip install flake8==6.0.0 flake8-isort==6.0.0
+        pip install flake8==7.3.0 flake8-isort==7.3.0
     
     - name: Test PEP8      
       run: python -m flake8 backend/
@@ -68,6 +65,7 @@ jobs:
   # Push backend Docker image to DockerHub
   build_backend_and_push_to_docker_hub:
     name: Push backend Docker image to DockerHub
+    if: github.ref_name == 'main'
     runs-on: ubuntu-latest
     needs: tests
     steps:
@@ -112,6 +110,7 @@ jobs:
   # Push frontend Docker image to DockerHub
   build_frontend_and_push_to_docker_hub:
     name: Push frontend Docker image to DockerHub
+    if: github.ref_name == 'main'
     runs-on: ubuntu-latest
     needs: frontend_tests
     steps:
@@ -134,6 +133,7 @@ jobs:
   # Push gateway Docker image to DockerHub
   build_gateway_and_push_to_docker_hub:
     name: Push gateway Docker image to DockerHub
+    if: github.ref_name == 'main'
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
@@ -155,6 +155,7 @@ jobs:
   # Deploy to production server
   deploy:
     name: Deploy to production
+    if: github.ref_name == 'main'
     runs-on: ubuntu-latest
     needs:      
       - build_backend_and_push_to_docker_hub
@@ -191,6 +192,7 @@ jobs:
   # Integration tests
   integration_tests:
     name: Integration tests
+    if: github.ref_name == 'main'
     runs-on: ubuntu-latest
     needs: deploy
     steps:
@@ -212,6 +214,7 @@ jobs:
   # Send message to Telegram 
   send_message:
     name: Send message to Telegram
+    if: github.ref_name == 'main'
     runs-on: ubuntu-latest
     needs: integration_tests
     steps:
@@ -220,4 +223,8 @@ jobs:
       with:
         to: ${{ secrets.TELEGRAM_TO }}
         token: ${{ secrets.TELEGRAM_TOKEN }}
-        message: Деплой Kittygram успешно выполнен!
+        message: 
+          Деплой Kittygram успешно выполнен!
+          {{ github.actor }}
+          {{ github.event.commits[0].message }}
+          https://github.com/${{ github.repository }}/commit/${{ github.sha }}"

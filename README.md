@@ -1,26 +1,41 @@
-#  Как работать с репозиторием финального задания
+![example workflow](https://github.com/hbestwork/kittygram_final/actions/workflows/main.yml/badge.svg)
 
-## Что нужно сделать
+Автор: Дмитрий Русановский
 
-Настроить запуск проекта Kittygram в контейнерах и CI/CD с помощью GitHub Actions
+#  Проект Kittygram
+Kittygram - это приложение, позволяющее пользователям обмениваться информацией о котиках.
 
-## Как проверить работу с помощью автотестов
+## Стек технологий
+- Python
+- Django
+- Node
+- Docker
+- PostgreSQL
+- Nginx
 
-В корне репозитория создайте файл tests.yml со следующим содержимым:
-```yaml
-repo_owner: ваш_логин_на_гитхабе
-kittygram_domain: полная ссылка (https://доменное_имя) на ваш проект Kittygram
-taski_domain: полная ссылка (https://доменное_имя) на ваш проект Taski
-dockerhub_username: ваш_логин_на_докерхабе
-```
+## Как развернуть проект
 
-Скопируйте содержимое файла `.github/workflows/main.yml` в файл `kittygram_workflow.yml` в корневой директории проекта.
+- Создайте директорию для приложения, например, `kittygram/`
+- Скопируйте туда файл `docker-compose.production.yml`
+- Создайте в этой директории файл `.env`
+- Заполните файл `.env`, как показано в следующей секции
+- Запустите приложение командой `sudo docker compose -f docker-compose.production.yml up -d`
+- Выполните команды:
+  ```bash
+  sudo docker compose -f docker-compose.production.yml exec backend python manage.py migrate
+  sudo docker compose -f docker-compose.production.yml exec backend python manage.py collectstatic
+  sudo docker compose -f docker-compose.production.yml exec backend cp -r /app/collected_static/. /backend_static/static/
+  ```
 
-Для локального запуска тестов создайте виртуальное окружение, установите в него зависимости из backend/requirements.txt и запустите в корневой директории проекта `pytest`.
-
-## Чек-лист для проверки перед отправкой задания
-
-- Проект Taski доступен по доменному имени, указанному в `tests.yml`.
-- Проект Kittygram доступен по доменному имени, указанному в `tests.yml`.
-- Пуш в ветку main запускает тестирование и деплой Kittygram, а после успешного деплоя вам приходит сообщение в телеграм.
-- В корне проекта есть файл `kittygram_workflow.yml`.
+## Как заполнить файл `.env`
+Пример заполнения `.env` файла можно найти в файле `.env.example`
+Параметры:
+- `POSTGRES_DB` - Название базы данных (может быть любым, можно оставить как есть)
+- `POSTGRES_USER` - Имя пользователя базы данных (может быть любым, можно оставить как есть)
+- `POSTGRES_PASSWORD` - Пароль пользователя базы данных 
+- `DB_HOST` - Адрес хоста, на котором находится база данных. Должно быть `db`.
+- `DB_PORT` - Порт хоста, на котором находится база данных. Должно быть `5432`.
+- `SECRET_KEY` - Секретный ключ.
+- `DEBUG` - Отладочный режим приложения. В продакшене должно быть False.
+- `ALLOWED_HOSTS` - Список доменных имён или хостов, для которых проект будет обслуживать запросы. Добавьте сюда адрес вашего удаленного сервера, при необходимости. 
+- `PROD_DB` - Параметр, задающий использование в продакшене базы данных `PostgreSQL`. Должно быть True.

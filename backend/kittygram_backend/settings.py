@@ -2,12 +2,12 @@
 import os
 from pathlib import Path
 from environs import Env
-
+import get_random_secret_key from django.core.management.utils
 env = Env()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = env('SECRET_KEY', 'secret_key')
+SECRET_KEY = env('SECRET_KEY', get_random_secret_key())
 
 DEBUG = env.bool('DEBUG', False)
 
@@ -57,16 +57,26 @@ TEMPLATES = [
 WSGI_APPLICATION = 'kittygram_backend.wsgi.application'
 
 
-DATABASES = {
-    'default': {        
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': env('POSTGRES_DB', 'kittygram'),
-        'USER': env('POSTGRES_USER', 'kittygram_user'),
-        'PASSWORD': env('POSTGRES_PASSWORD', ''),
-        'HOST': env('DB_HOST', 'db'),
-        'PORT': env('DB_PORT', 5432)
+PROD_DB = env.bool('PROD_DB', False)
+
+if PROD_DB:
+    DATABASES = {
+        'default': {        
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': env('POSTGRES_DB', 'kittygram'),
+            'USER': env('POSTGRES_USER', 'kittygram_user'),
+            'PASSWORD': env('POSTGRES_PASSWORD', ''),
+            'HOST': env('DB_HOST', 'db'),
+            'PORT': env('DB_PORT', 5432)
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # Password validation
