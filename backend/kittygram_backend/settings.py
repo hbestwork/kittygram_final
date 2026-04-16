@@ -2,7 +2,7 @@
 import os
 from pathlib import Path
 from environs import Env
-import get_random_secret_key from django.core.management.utils
+from django.core.management.utils import get_random_secret_key
 env = Env()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
